@@ -740,5 +740,3 @@ spec/acceptance/nodesets/ubuntu-1804.yml:
     - locales
     - apt-transport-https
     - ca-certificates
-.vscode/extensions.json:
-  delete: true
