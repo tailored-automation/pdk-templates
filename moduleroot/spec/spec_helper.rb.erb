@@ -57,6 +57,7 @@ RSpec.configure do |c|
     <%- if @configs['strict_variables'] -%>
     Puppet.settings[:strict_variables] = <%= @configs['strict_variables'] %>
     <%- end -%>
+    Facter.clear
   end
   c.filter_run_excluding(bolt: true) unless ENV['GEM_BOLT']
   c.after(:suite) do
