@@ -1,6 +1,9 @@
 ---
 common:
   disable_legacy_facts: false
+  owner: tailoredautomation
+.editorconfig:
+  unmanaged: true
 .gitattributes:
   include:
     '*.rb': 'eol=lf'
@@ -50,6 +53,7 @@ common:
       - '.project'
       - '.envrc'
       - '/inventory.yaml'
+      - '/spec/fixtures/litmus_inventory.yaml'
 .pdkignore:
   required: *ignorepaths
   paths:
@@ -68,6 +72,8 @@ common:
     - '/.yardopts'
     - '/spec/'
     - '/.vscode/'
+    - '/.sync.yml'
+    - '/.devcontainer/'
 .travis.yml:
   stages:
     - static
@@ -146,19 +152,9 @@ Rakefile:
 .rubocop.yml:
   selected_profile: strict
   default_configs: &default_configs
-    Metrics/LineLength:
+    Layout/LineLength:
       Description: People have wide screens, use them.
       Max: 200
-
-    # Disabled i18n cops by default
-    GetText:
-      Enabled: false
-
-    # Configure i18n cops for when they are enabled
-    GetText/DecorateString:
-      Description: We don't want to decorate test output.
-      Exclude:
-        - 'spec/**/*'
 
     # RSpec cops
     RSpec/BeforeAfterAll:
@@ -170,14 +166,14 @@ Rakefile:
       Description: Prefer explicit :each argument, matching existing module's style
       EnforcedStyle: each
 
+    RSpec/DescribeSymbol:
+      Exclude:
+        - 'spec/unit/facter/**/*.rb'
+
     # Style Cops
     Style/BlockDelimiters:
       Description: Prefer braces for chaining. Mostly an aesthetical choice. Better to be consistent then.
       EnforcedStyle: braces_for_chaining
-
-    Style/BracesAroundHashParameters:
-      Description: Braces are required by Ruby 2.7. Cop removed from RuboCop v0.80.0. See https://github.com/rubocop-hq/rubocop/pull/7643
-      Enabled: false
 
     Style/ClassAndModuleChildren:
       Description: Compact style reduces the required amount of indentation.
@@ -211,7 +207,7 @@ Rakefile:
       Description: Prefer always trailing comma on multiline argument lists. This makes diffs, and re-ordering nicer.
       EnforcedStyleForMultiline: comma
 
-    Style/TrailingCommaInLiteral:
+    Style/TrailingCommaInArrayLiteral:
       Description: Prefer always trailing comma on multiline literals. This makes diffs, and re-ordering nicer.
       EnforcedStyleForMultiline: comma
 
@@ -222,9 +218,8 @@ Rakefile:
   cleanup_cops: &cleanup_cops
     Bundler/OrderedGems:
     Layout/AccessModifierIndentation:
-    Layout/AlignArray:
-    Layout/AlignHash:
-    Layout/AlignParameters:
+    Layout/ArrayAlignment:
+    Layout/ParameterAlignment:
     Layout/BlockEndNewline:
     Layout/CaseIndentation:
     Layout/ClosingParenthesisIndentation:
@@ -242,9 +237,9 @@ Rakefile:
     Layout/EmptyLinesAroundModuleBody:
     Layout/ExtraSpacing:
     Layout/FirstParameterIndentation:
-    Layout/IndentArray:
-    Layout/IndentAssignment:
-    Layout/IndentHash:
+    Layout/FirstArrayElementIndentation:
+    Layout/AssignmentIndentation:
+    Layout/FirstHashElementIndentation:
     Layout/IndentationConsistency:
     Layout/IndentationWidth:
     Layout/InitialIndentation:
@@ -274,28 +269,27 @@ Rakefile:
     Layout/SpaceInLambdaLiteral:
     Layout/SpaceInsideArrayPercentLiteral:
     Layout/SpaceInsideBlockBraces:
-    Layout/SpaceInsideBrackets:
     Layout/SpaceInsideHashLiteralBraces:
     Layout/SpaceInsideParens:
     Layout/SpaceInsidePercentLiteralDelimiters:
     Layout/SpaceInsideRangeLiteral:
     Layout/SpaceInsideStringInterpolation:
-    Layout/Tab:
-    Layout/TrailingBlankLines:
+    Layout/IndentationStyle:
+    Layout/TrailingEmptyLines:
     Layout/TrailingWhitespace:
-    Lint/BlockAlignment:
-    Lint/DefEndAlignment:
+    Layout/BlockAlignment:
+    Layout/DefEndAlignment:
     Lint/DeprecatedClassMethods:
     Lint/EmptyInterpolation:
     Lint/LiteralInInterpolation:
-    Lint/MultipleCompare:
+    Lint/MultipleComparison:
     Lint/PercentStringArray:
     Lint/PercentSymbolArray:
     Lint/RescueType:
     Lint/SafeNavigationChain:
-    Lint/StringConversionInInterpolation:
+    Lint/RedundantStringCoercion:
     Lint/UnifiedInteger:
-    Lint/UnneededSplatExpansion:
+    Lint/RedundantSplatExpansion:
     Lint/UnusedBlockArgument:
     Lint/UnusedMethodArgument:
     Performance/CaseWhenSplat:
@@ -305,15 +299,15 @@ Rakefile:
     Performance/Detect:
     Performance/DoubleStartEndWith:
     Performance/FlatMap:
-    Performance/LstripRstrip:
     Performance/RangeInclude:
     Performance/RedundantBlockCall:
     Performance/RedundantMatch:
     Performance/RedundantMerge:
-    Performance/RedundantSortBy:
+    Style/RedundantSortBy:
     Performance/RegexpMatch:
+      Enabled: false
     Performance/ReverseEach:
-    Performance/Sample:
+    Style/Sample:
     Performance/Size:
     Performance/StartWith:
     Performance/StringReplacement:
@@ -340,7 +334,6 @@ Rakefile:
     Style/BarePercentLiterals:
     Style/BlockComments:
     Style/BlockDelimiters:
-    Style/BracesAroundHashParameters:
     Style/CharacterLiteral:
     Style/ClassCheck:
     Style/ClassMethods:
@@ -358,7 +351,6 @@ Rakefile:
     Style/EmptyMethod:
     Style/EvenOdd:
     Style/FormatString:
-    Style/FrozenStringLiteralComment:
     Style/HashSyntax:
     Style/InfiniteLoop:
     Style/InverseMethods:
@@ -411,13 +403,13 @@ Rakefile:
     Style/SymbolLiteral:
     Style/TernaryParentheses:
     Style/TrailingCommaInArguments:
-    Style/TrailingCommaInLiteral:
+    Style/TrailingCommaInArrayLiteral:
     Style/TrailingUnderscoreVariable:
     Style/TrivialAccessors:
     Style/UnlessElse:
-    Style/UnneededCapitalW:
-    Style/UnneededInterpolation:
-    Style/UnneededPercentQ:
+    Style/RedundantCapitalW:
+    Style/RedundantInterpolation:
+    Style/RedundantPercentQ:
     Style/VariableInterpolation:
     Style/WhenThen:
     Style/WhileUntilDo:
@@ -451,27 +443,26 @@ Rakefile:
         Lint/AmbiguousRegexpLiteral:
         Lint/AssignmentInCondition:
         Lint/CircularArgumentReference:
-        Lint/ConditionPosition:
+        Layout/ConditionPosition:
         Lint/Debugger:
         Lint/DuplicateCaseCondition:
         Lint/DuplicateMethods:
-        Lint/DuplicatedKey:
+        Lint/DuplicateHashKey:
         Lint/EachWithObjectArgument:
         Lint/ElseLayout:
         Lint/EmptyEnsure:
         Lint/EmptyExpression:
         Lint/EmptyWhen:
-        Lint/EndAlignment:
-        Lint/EndInMethod:
+        Layout/EndAlignment:
+        Style/EndBlock:
         Lint/EnsureReturn:
         Lint/FloatOutOfRange:
         Lint/FormatParameterMismatch:
-        Lint/HandleExceptions:
+        Lint/SuppressedException:
         Lint/ImplicitStringConcatenation:
         Lint/IneffectiveAccessModifier:
         Lint/InheritException:
-        Lint/InvalidCharacterLiteral:
-        Lint/LiteralInCondition:
+        Lint/LiteralAsCondition:
         Lint/Loop:
         Lint/NestedMethodDefinition:
         Lint/NextWithoutAccumulator:
@@ -484,20 +475,20 @@ Rakefile:
         Lint/ShadowedException:
         Lint/ShadowingOuterLocalVariable:
         Lint/UnderscorePrefixedVariableName:
-        Lint/UnneededDisable:
+        Lint/RedundantCopDisableDirective:
         Lint/UnreachableCode:
         Lint/UselessAccessModifier:
         Lint/UselessAssignment:
-        Lint/UselessComparison:
+        Lint/BinaryOperatorWithIdenticalOperands:
         Lint/UselessElseWithoutRescue:
         Lint/UselessSetterCall:
         Lint/Void:
-        Metrics/BlockNesting:
-        Metrics/LineLength:
+        Layout/LineLength:
         Performance/Caller:
         Performance/EndWith:
         Performance/FixedSize:
-        Performance/HashEachMethods:
+        Style/HashEachMethods:
+          Enabled: false
         RSpec/AnyInstance:
         RSpec/AroundBlock:
         RSpec/BeforeAfterAll:
@@ -525,22 +516,20 @@ Rakefile:
         RSpec/VerifiedDoubles:
         Security/Eval:
         Security/MarshalLoad:
-        Style/AccessorMethodName:
-        Style/AsciiIdentifiers:
+        Naming/AsciiIdentifiers:
         Style/BeginBlock:
         Style/CaseEquality:
-        Style/ClassAndModuleCamelCase:
+        Naming/ClassAndModuleCamelCase:
         Style/ClassAndModuleChildren:
         Style/ClassVars:
-        Style/ConstantName:
+        Naming/ConstantName:
         Style/Documentation:
           Exclude:
-          - 'lib/puppet/parser/functions/**/*'
-          - 'spec/**/*'
+            - 'lib/puppet/parser/functions/**/*'
+            - 'spec/**/*'
         Style/DoubleNegation:
-        Style/EndBlock:
-        Style/FileName:
-        Style/FlipFlop:
+        Naming/FileName:
+        Lint/FlipFlop:
         Style/For:
         Style/FormatStringToken:
         Style/GlobalVars:
@@ -550,22 +539,34 @@ Rakefile:
         Style/IfUnlessModifierOfIfUnless:
         Style/IfWithSemicolon:
         Style/MethodCalledOnDoEndBlock:
-        Style/MethodMissing:
-        Style/MethodName:
+        Lint/MissingSuper:
+        Style/MissingRespondToMissing:
+        Naming/MethodName:
         Style/ModuleFunction:
         Style/MultilineBlockChain:
         Style/MultilineIfModifier:
         Style/MultilineTernaryOperator:
         Style/MultipleComparison:
         Style/NestedTernaryOperator:
-        Style/NumericPredicate:
-        Style/OpMethod:
+        Naming/BinaryOperatorParameterName:
         Style/OptionalArguments:
-        Style/PredicateName:
+        Naming/PredicateName:
         Style/SelfAssignment:
         Style/StructInheritance:
-        Style/VariableName:
-        Style/VariableNumber:
+        Naming/VariableName:
+        RSpec/VariableName:
+        Performance/AncestorsInclude:
+        Performance/BigDecimalWithNumericArgument:
+        Performance/BlockGivenWithExplicitBlock:
+        Performance/ConstantRegexp:
+        Performance/MethodObjectAsBlock:
+        Performance/RedundantSortBlock:
+        Performance/RedundantStringChars:
+        Performance/ReverseFirst:
+        Performance/SortReverse:
+        Performance/Squeeze:
+        Performance/StringInclude:
+        Performance/Sum:
 
     # Uses rubocop default cops
     hardcore:
@@ -603,24 +604,26 @@ Gemfile:
           - mingw
           - x64_mingw
       - gem: 'puppet-module-posix-default-r#{minor_version}'
-        version: '~> 0.4'
+        version: '~> 1.0'
         platforms: ruby
       - gem: 'puppet-module-posix-dev-r#{minor_version}'
-        version: '~> 0.4'
+        version: '~> 1.0'
         platforms: ruby
       - gem: 'puppet-module-win-default-r#{minor_version}'
-        version: '~> 0.4'
+        version: '~> 1.0'
         platforms:
           - mswin
           - mingw
           - x64_mingw
       - gem: 'puppet-module-win-dev-r#{minor_version}'
-        version: '~> 0.4'
+        version: '~> 1.0'
         platforms:
           - mswin
           - mingw
           - x64_mingw
       - gem: puppet-lint-param-docs
+      - gem: 'voxpupuli-puppet-lint-plugins'
+        version: '>= 3.0'
     ':system_tests':
       - gem: 'puppet-module-posix-system-r#{minor_version}'
         platforms: ruby
@@ -670,6 +673,10 @@ Gemfile:
         puppet_version: '~> 5'
     # beaker: true
     default_before_script: true
+.gitpod.Dockerfile:
+  unmanaged: true
+.gitpod.yml:
+  unmanaged: true
 spec/default_facts.yml:
   ipaddress: "172.16.254.254"
   ipaddress6: "FE80:0000:0000:0000:AAAA:AAAA:AAAA"
@@ -705,14 +712,7 @@ spec/acceptance/nodesets/rocky-8.yml:
     - iproute
     - initscripts
 spec/acceptance/nodesets/debian-8.yml:
-  roles:
-    - agent
-  packages:
-    - wget
-    - net-tools
-    - locales
-    - apt-transport-https
-    - ca-certificates
+  delete: true
 spec/acceptance/nodesets/debian-9.yml:
   roles:
     - agent
@@ -751,3 +751,17 @@ spec/acceptance/nodesets/ubuntu-1804.yml:
     - locales
     - apt-transport-https
     - ca-certificates
+.github/workflows/nightly.yml:
+  unmanaged: true
+  slack-notifications:
+    channel: '#team-cat-bots'
+    name: 'GABot'
+.github/workflows/pr_test.yml:
+  unmanaged: true
+.github/workflows/auto_release.yml:
+  unmanaged: true
+.github/workflows/spec.yml:
+  unmanaged: true
+  checks: 'validate lint check rubocop'
+.github/workflows/release.yml:
+  unmanaged: true
