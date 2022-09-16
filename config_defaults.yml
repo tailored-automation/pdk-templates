@@ -240,6 +240,7 @@ Rakefile:
     Layout/FirstArrayElementIndentation:
     Layout/AssignmentIndentation:
     Layout/FirstHashElementIndentation:
+      Enabled: false
     Layout/IndentationConsistency:
     Layout/IndentationWidth:
     Layout/InitialIndentation:
