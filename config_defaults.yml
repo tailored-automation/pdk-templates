@@ -532,6 +532,7 @@ Rakefile:
           EnforcedStyle: receive
         RSpec/MultipleDescribes:
         RSpec/NamedSubject:
+          Enabled: false
         RSpec/OverwritingSetup:
         RSpec/RepeatedDescription:
         RSpec/RepeatedExample:
