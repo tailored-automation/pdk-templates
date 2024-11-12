@@ -37,6 +37,7 @@ common:
       - debian-11
       - ubuntu-2004
       - ubuntu-2204
+      - ubuntu-2404
     puppet:
       - puppet7
       - puppet8
@@ -572,16 +573,12 @@ Gemfile:
   required:
     ':development':
       - gem: voxpupuli-test
-        version: '6.0.0'
       - gem: rubocop-performance
-        version: '~> 1.18'
     ':system_tests':
       - gem: beaker
-        version: '~> 4.29'
         from_env: BEAKER_VERSION
       - gem: beaker-abs
         from_env: BEAKER_ABS_VERSION
-        version: '~> 0.1'
       - gem: beaker-pe
       - gem: beaker-hostgenerator
         from_env: BEAKER_HOSTGENERATOR_VERSION
@@ -596,7 +593,6 @@ Gemfile:
   optional:
       ':development':
         - gem: 'faraday'
-          version: '~> 1.0'
         - gem: 'github_changelog_generator'
         - gem: 'puppet-blacksmith'
         - gem: 'puppet-strings'
@@ -692,6 +688,16 @@ spec/acceptance/nodesets/ubuntu-2004.yml:
     - apt-transport-https
     - ca-certificates
 spec/acceptance/nodesets/ubuntu-2204.yml:
+  roles:
+    - agent
+  packages:
+    - wget
+    - net-tools
+    - iproute2
+    - locales
+    - apt-transport-https
+    - ca-certificates
+spec/acceptance/nodesets/ubuntu-2404.yml:
   roles:
     - agent
   packages:
